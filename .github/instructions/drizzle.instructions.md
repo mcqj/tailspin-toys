@@ -55,6 +55,16 @@ export async function getAllGameIds(db: Database): Promise<number[]> {
 - Map raw rows to the app-facing `Game`/`Publisher`/`Category` types in one place; don't leak Drizzle row shapes into components.
 - Keep ordering/lookup logic in `games.ts`, not in pages.
 
+## Documentation
+
+- Every exported function in `db/` and `src/lib/` must have a TSDoc/JSDoc comment describing its purpose, every parameter, and its return value.
+- Use an `@param` tag for each parameter and an `@returns` tag for every return type, including `Promise<void>`.
+- For injectable helpers, document `db` as the caller-provided database connection used by production code or tests.
+- Explain important constraints or decisions, such as deterministic ordering or idempotency; do not narrate the implementation.
+- Keep comments current when changing related code. Update inaccurate comments or delete comments that no longer add useful context.
+
+See [`code-standards.instructions.md`](code-standards.instructions.md) for the repository-wide comment and formatting rules.
+
 ## Determinism
 
 Seed-derived values must be reproducible across builds. Derive star ratings from a stable hash of the title (`ratingFromTitle`) — **never** `Math.random()`.
