@@ -24,6 +24,38 @@ test.describe('Game Listing and Navigation', () => {
     });
   });
 
+  test('should filter by multiple categories and publisher', async ({ page }) => {
+    await test.step('Navigate to the game listing', async () => {
+      await page.goto('/');
+      await expect(page.getByTestId('games-grid')).toBeVisible();
+    });
+
+    await test.step('Select two categories', async () => {
+      await page.getByRole('checkbox', { name: 'Strategy' }).check();
+      await page.getByRole('checkbox', { name: 'Puzzle' }).check();
+
+      const visibleCards = page.getByTestId('game-card').filter({ visible: true });
+      await expect(visibleCards).toHaveCount(8);
+      await expect(page.getByTestId('filter-results-count')).toHaveText('Showing 8 of 21 games');
+    });
+
+    await test.step('Combine the categories with a publisher', async () => {
+      await page.getByLabel('Publisher').selectOption({ label: 'GitHub Games' });
+
+      const visibleCards = page.getByTestId('game-card').filter({ visible: true });
+      await expect(visibleCards).toHaveCount(2);
+      await expect(visibleCards.nth(0).getByTestId('game-publisher')).toHaveText('GitHub Games');
+      await expect(visibleCards.nth(1).getByTestId('game-publisher')).toHaveText('GitHub Games');
+    });
+
+    await test.step('Clear all filters', async () => {
+      await page.getByRole('button', { name: 'Clear filters' }).click();
+
+      await expect(page.getByTestId('game-card').filter({ visible: true })).toHaveCount(21);
+      await expect(page.getByTestId('filter-results-count')).toHaveText('Showing 21 of 21 games');
+    });
+  });
+
   test('should navigate to correct game details page when clicking on a game', async ({ page }) => {
     let gameId: string | null;
     let gameTitle: string | null;
